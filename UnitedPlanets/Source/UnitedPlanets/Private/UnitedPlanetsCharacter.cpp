@@ -23,6 +23,10 @@ AUnitedPlanetsCharacter::AUnitedPlanetsCharacter()
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
+	// Set child actor
+	Gun = CreateDefaultSubobject<UChildActorComponent>(TEXT("Gun"));
+	Gun->SetupAttachment(GetMesh());
+
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
@@ -59,7 +63,9 @@ void AUnitedPlanetsCharacter::BeginPlay()
 	GunParent = GetWorld()->SpawnActor<AGunParent>(GunBlueprint);
 	GunParent->AttachToComponent(Arms, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint")); //Attach gun mesh component to Skeleton, doing it here because the skelton is not yet created in the constructor
 	GunParent->AnimInstance = Arms->GetAnimInstance();
+
 	InputComponent->BindAction("Fire", IE_Pressed, GunParent, &AGunParent::OnFire);
+	InputComponent->BindAction("Reload", IE_Pressed, GunParent, &AGunParent::ReloadGun);
 
 	}
 

@@ -15,11 +15,17 @@ public:
 	// Sets default values for this actor's properties
 	AGunParent();
 
-	UPROPERTY(BlueprintReadWrite, VisibleDefaultsOnly, Category = Shooter)
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = Shooter)
 		class USkeletalMeshComponent* Guns;
 
-	UPROPERTY(BlueprintReadWrite, VisibleDefaultsOnly, Category = Shooter)
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = Shooter)
 		class USceneComponent* Barrel_refpoint;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* GunSight;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = Shooter)
+		class UArrowComponent* Arrow;
 
 
 protected:
@@ -33,6 +39,14 @@ public:
 	/** Fires a projectile. */
 	UFUNCTION(BlueprintCallable, Category = Shooter)
 		void OnFire();
+
+	/** Reloads the Gun */
+	UFUNCTION(BlueprintCallable, Category = Shooter)
+		void ReloadGun();
+
+	/** Aim down sights */
+	UFUNCTION(BlueprintCallable, Category = Shooter)
+		void SwitchSights();
 
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shooter)
@@ -69,7 +83,15 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Shooter)
 		int ClipSize = 15;
 
+	/** The difference of ClipSize from AmmoCurrent*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Shooter)
+		int BulletDifference;
+
 	/** The fire rate of the gun */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Shooter)
 		float FireRate = 0.15f;
+
+	/** The Text */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Shooter)
+		FText GunName;
 };

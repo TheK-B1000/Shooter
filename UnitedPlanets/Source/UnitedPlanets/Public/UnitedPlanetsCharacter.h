@@ -23,6 +23,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Shooter)
 		class USkeletalMeshComponent* Arms;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Shooter)
+		class UChildActorComponent* Gun;
+
 protected:
 	virtual void BeginPlay();
 
@@ -35,7 +38,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Shooter")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Shooter")
 	TSubclassOf<class AGunParent> GunBlueprint;
 
 private:
@@ -45,9 +48,6 @@ private:
 
 
 protected:
-	
-	/** Fires a projectile. 
-	void OnFire(); */
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
