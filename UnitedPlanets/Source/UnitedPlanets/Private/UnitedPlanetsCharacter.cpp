@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
@@ -46,8 +47,14 @@ AUnitedPlanetsCharacter::AUnitedPlanetsCharacter()
 	Arms->RelativeLocation = FVector(-0.5f, -4.4f, -155.7f);
 
 
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Note: The ProjectileClass and the skeletal mesh/anim blueprints for Mesh1P are set in the
 	// derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	// JetPack
+	maxRiseSpeed = 420;
 }
 
 void AUnitedPlanetsCharacter::BeginPlay()
@@ -70,6 +77,15 @@ void AUnitedPlanetsCharacter::BeginPlay()
 	InputComponent->BindAction("AimDown", IE_Released, GunParent, &AGunParent::SwitchBack);
 
 	}
+
+void AUnitedPlanetsCharacter::Tick(float DeltaTime)
+{
+	if (bIsSpaceBarDown)
+	{
+		GetMovementComponent()->Velocity.Z = maxRiseSpeed;
+		GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -94,6 +110,16 @@ void AUnitedPlanetsCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAxis("TurnRate", this, &AUnitedPlanetsCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AUnitedPlanetsCharacter::LookUpAtRate);
+}
+
+void AUnitedPlanetsCharacter::Jump()
+{
+	bIsSpaceBarDown = true;
+}
+
+void AUnitedPlanetsCharacter::StopJumping()
+{
+	bIsSpaceBarDown = false;
 }
 
 void AUnitedPlanetsCharacter::MoveForward(float Value)

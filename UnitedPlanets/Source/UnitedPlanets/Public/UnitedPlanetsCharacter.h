@@ -30,6 +30,9 @@ protected:
 	virtual void BeginPlay();
 
 public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -38,6 +41,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	/** Maximum JetPack Rise Speed */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		float maxRiseSpeed;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Shooter")
 	TSubclassOf<class AGunParent> GunBlueprint;
 
@@ -45,9 +52,16 @@ private:
 
 	AGunParent* GunParent;
 
-
-
 protected:
+
+	/** Override Jump class from ACharacter and creating our own for Jetpack*/
+	void Jump() override;
+
+	/**  Override StopJumping class from ACharacter and creating our own for Jetpack */
+	void StopJumping() override;
+
+	/**  Check if SpaceBar pressed or released */
+	bool bIsSpaceBarDown;
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
@@ -76,6 +90,5 @@ protected:
 public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
 };
 
