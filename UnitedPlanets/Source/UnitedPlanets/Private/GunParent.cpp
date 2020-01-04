@@ -4,9 +4,12 @@
 #include "GunParentProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "UnitedPlanetsCharacter.h"
 #include "Components/ArrowComponent.h"
+#include "SetViewTargetBlend.h"
+
 
 
 
@@ -113,6 +116,14 @@ void AGunParent::ReloadGun()
 
 void AGunParent::SwitchSights()
 {
+	GetWorld()->SpawnActor<ASetViewTargetBlend>()->AimDown();
+	UE_LOG(LogTemp, Warning, TEXT("Aiming Down Sights"));
+}
+
+void AGunParent::SwitchBack()
+{
+	GetWorld()->SpawnActor<ASetViewTargetBlend>()->StopAiming();
+	UE_LOG(LogTemp, Warning, TEXT("Aiming Hip Fire"));
 }
 
 

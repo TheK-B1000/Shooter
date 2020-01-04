@@ -48,6 +48,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Shooter)
 		void SwitchSights();
 
+	/** Switch to hip fire */
+	UFUNCTION(BlueprintCallable, Category = Shooter)
+		void SwitchBack();
+
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Shooter)
 		FVector GunOffset;

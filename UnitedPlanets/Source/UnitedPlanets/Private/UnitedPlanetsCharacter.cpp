@@ -66,6 +66,8 @@ void AUnitedPlanetsCharacter::BeginPlay()
 
 	InputComponent->BindAction("Fire", IE_Pressed, GunParent, &AGunParent::OnFire);
 	InputComponent->BindAction("Reload", IE_Pressed, GunParent, &AGunParent::ReloadGun);
+	InputComponent->BindAction("AimDown", IE_Pressed, GunParent, &AGunParent::SwitchSights);
+	InputComponent->BindAction("AimDown", IE_Released, GunParent, &AGunParent::SwitchBack);
 
 	}
 
