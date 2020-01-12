@@ -10,6 +10,7 @@
 #include "GameFramework/InputSettings.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "MyAnimInstance.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -40,7 +41,16 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+
+	InputComponent->BindAction("Block", IE_Pressed, this, &APlayerCharacter::Block);
+}
+
+void APlayerCharacter::Block()
+{
+	//Get a reference to our custom anim instance and tell it to update our character's animation
+	UMyAnimInstance* AnimInstanceRef = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstanceRef) AnimInstanceRef->Block();
 }
 
 // Called every frame
