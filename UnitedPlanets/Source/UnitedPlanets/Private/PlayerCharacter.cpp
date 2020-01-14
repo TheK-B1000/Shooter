@@ -18,19 +18,29 @@ APlayerCharacter::APlayerCharacter()
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
-	/*
-	// Create a CameraBoom
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	// AzimuthGimbal
+	//AzimuthGimbal = CreateDefaultSubobject<USceneComponent>(TEXT("AzimuthGimbal"));
+	//CameraBoom->SetupAttachment(RootComponent);
+
+	// Character Movement
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
+	GetCharacterMovement()->AirControl = 0.2;
+
+	// Create a Camera Boom
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 8.492264f)); // Position the cameraboom
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 300.0f;
 
-	// Create a CameraComponent
+	// Create Follow Camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom);
-	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = true;
-
-	*/
-
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -43,7 +53,6 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 
-	InputComponent->BindAction("Block", IE_Pressed, this, &APlayerCharacter::Block);
 }
 
 void APlayerCharacter::Block()
@@ -51,6 +60,11 @@ void APlayerCharacter::Block()
 	//Get a reference to our custom anim instance and tell it to update our character's animation
 	UMyAnimInstance* AnimInstanceRef = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstanceRef) AnimInstanceRef->Block();
+}
+
+void APlayerCharacter::StopBlock()
+{
+
 }
 
 // Called every frame
@@ -81,9 +95,9 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
+	//PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
+	//PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
 }
 
 void APlayerCharacter::Jump()
@@ -98,23 +112,21 @@ void APlayerCharacter::StopJumping()
 
 void APlayerCharacter::MoveForward(float Value)
 {
-	if (Value != 0.0f)
-	{
-		// add movement in that direction
-		AddMovementInput(GetActorForwardVector(), Value);
-	}
+	FRotator Rotation = Controller->GetControlRotation();
+	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 }
 
 void APlayerCharacter::MoveRight(float Value)
 {
-	if (Value != 0.0f)
-	{
-		// add movement in that direction
-		AddMovementInput(GetActorRightVector(), Value);
-	}
+	FRotator Rotation = Controller->GetControlRotation();
+	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 }
 
-void APlayerCharacter::TurnAtRate(float Rate)
+/* void APlayerCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
@@ -124,5 +136,4 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
-
+} */
