@@ -20,17 +20,25 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	class UCameraComponent* FollowCamera;
-	
 
+	UPROPERTY(BlueprintReadWrite, Category = AnimationState)
+	bool AttackStarted;
+
+	UPROPERTY(BlueprintReadWrite, Category = AnimationState)
+	bool BlockStarted;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** Handles Attack*/
+	void Attack();
+
+	/** Stops Attack Animation*/
+	void StopAttackAnimation();
+
 	/** Handles Deflect*/
 	void Block();
-
-	/** Stop Deflect*/
-	void StopBlock();
 
 	/** Override Jump class from ACharacter*/
 	void Jump() override;
@@ -42,22 +50,12 @@ protected:
 	bool bIsSpaceBarDown;
 
 	/** Handles moving forward/backward */
-	void MoveForward(float Val);
+	void MoveForward(float Value);
 
 	/** Handles stafing movement, left and right */
-	void MoveRight(float Val);
+	void MoveRight(float Value);
 
-	/**
-	 * Called via input to turn at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	//void TurnAtRate(float Rate);
-
-	/**
-	 * Called via input to turn look up/down at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	//void LookUpAtRate(float Rate);
+	FTimerHandle AttackTimerHandle;
 
 public:	
 	// Called every frame

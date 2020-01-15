@@ -2,15 +2,16 @@
 
 
 #include "PlayerCharacter.h"
+#include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/Actor.h"
 #include "GameFramework/InputSettings.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "MyAnimInstance.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -21,10 +22,6 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-
-	// AzimuthGimbal
-	//AzimuthGimbal = CreateDefaultSubobject<USceneComponent>(TEXT("AzimuthGimbal"));
-	//CameraBoom->SetupAttachment(RootComponent);
 
 	// Character Movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -45,25 +42,15 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Combat
+	AttackStarted = false;
+	BlockStarted = false;
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-
-}
-
-void APlayerCharacter::Block()
-{
-	//Get a reference to our custom anim instance and tell it to update our character's animation
-	UMyAnimInstance* AnimInstanceRef = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
-	if (AnimInstanceRef) AnimInstanceRef->Block();
-}
-
-void APlayerCharacter::StopBlock()
-{
 
 }
 
@@ -83,21 +70,21 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	// set up gameplay key bindings
 	check(PlayerInputComponent);
 
-	// Bind jump events
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
 	// Bind movement events
-	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
+	InputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
+	InputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
 
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+	// Bind jump events
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	// Bind Combat
+	InputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::Attack);
+	InputComponent->BindAction("Block", IE_Pressed, this, &APlayerCharacter::Block);
+	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	//PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	//PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
+
 }
 
 void APlayerCharacter::Jump()
@@ -112,28 +99,41 @@ void APlayerCharacter::StopJumping()
 
 void APlayerCharacter::MoveForward(float Value)
 {
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	if ((Controller) && (Value != 0.0f))
+	{
+		FRotator Rotation = Controller->GetControlRotation();
+		FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
+	}
 }
 
 void APlayerCharacter::MoveRight(float Value)
 {
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	if ((Controller) && (Value != 0.0f))
+	{
+		FRotator Rotation = Controller->GetControlRotation();
+		FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
+	}
 }
 
-/* void APlayerCharacter::TurnAtRate(float Rate)
+void APlayerCharacter::Attack()
 {
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	AttackStarted = true;
+	UE_LOG(LogTemp, Warning, TEXT("Attacked"));
+
+	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttackAnimation, 0.2f, false);
 }
 
-void APlayerCharacter::LookUpAtRate(float Rate)
+void APlayerCharacter::Block()
 {
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-} */
+	UE_LOG(LogTemp, Warning, TEXT("Blocked"));
+}
+
+void APlayerCharacter::StopAttackAnimation()
+{
+	AttackStarted = false;
+	UE_LOG(LogTemp, Warning, TEXT("Attacked Stopped"));
+}
