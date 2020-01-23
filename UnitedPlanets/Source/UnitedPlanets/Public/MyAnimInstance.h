@@ -15,8 +15,16 @@ class UNITEDPLANETS_API UMyAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 protected:
+	/*Holds a reference to the character's movement forward or backwards*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+		float MovementForward;
+
+	/*Holds a reference to the character's movement right or left*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+		float MovementRight;
+
 	/*Holds a reference to the character's movement speed*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 		float MovementSpeed;
 
 	/*The attack montage*/

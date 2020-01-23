@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
 #include "Animation/AnimInstance.h"
+#include "MyAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/InputSettings.h"
@@ -114,7 +115,7 @@ void APlayerCharacter::MoveRight(float Value)
 	{
 		FRotator Rotation = Controller->GetControlRotation();
 		FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(Direction, Value);
 	}
 }
@@ -125,6 +126,8 @@ void APlayerCharacter::Attack()
 	if(AttackStarted)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attacked"));
+		UMyAnimInstance* AnimInstanceRef = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+		if (AnimInstanceRef) AnimInstanceRef->Attack();
 		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttackAnimation, 0.1f, false);
 	}
 }
