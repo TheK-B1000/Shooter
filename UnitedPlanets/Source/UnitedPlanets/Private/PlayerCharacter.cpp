@@ -45,7 +45,6 @@ APlayerCharacter::APlayerCharacter()
 	// Combat
 	AttackStarted = false;
 	BlockStarted = false;
-	ComboStarted = false;
 }
 
 // Called when the game starts or when spawned
@@ -123,17 +122,11 @@ void APlayerCharacter::MoveRight(float Value)
 void APlayerCharacter::Attack()
 {
 	AttackStarted = true;
-	UE_LOG(LogTemp, Warning, TEXT("Attacked"));
-
-	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttackAnimation, 0.2f, false);
-}
-
-void APlayerCharacter::AttackCombo()
-{
-	ComboStarted = true;
-	UE_LOG(LogTemp, Warning, TEXT("AttackComboStarted"));
-
-
+	if(AttackStarted)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attacked"));
+		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttackAnimation, 0.1f, false);
+	}
 }
 
 void APlayerCharacter::Block()

@@ -27,8 +27,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = AnimationState)
 	bool BlockStarted;
 
-	UPROPERTY(BlueprintReadWrite, Category = AnimationState)
-	bool ComboStarted;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -36,9 +34,6 @@ protected:
 
 	/** Handles Attack*/
 	void Attack();
-
-	/** Handles AttackCombo*/
-	void AttackCombo();
 
 	/** Stops Attack Animation*/
 	void StopAttackAnimation();
