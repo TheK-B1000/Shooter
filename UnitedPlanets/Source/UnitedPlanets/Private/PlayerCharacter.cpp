@@ -100,23 +100,29 @@ void APlayerCharacter::StopJumping()
 
 void APlayerCharacter::MoveForward(float Value)
 {
-	if ((Controller) && (Value != 0.0f))
+	if (CanMove)
 	{
-		FRotator Rotation = Controller->GetControlRotation();
-		FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+		if ((Controller) && (Value != 0.0f))
+		{
+			FRotator Rotation = Controller->GetControlRotation();
+			FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+			FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(Direction, Value);
+		}
 	}
 }
 
 void APlayerCharacter::MoveRight(float Value)
 {
-	if ((Controller) && (Value != 0.0f))
+	if (CanMove)
 	{
-		FRotator Rotation = Controller->GetControlRotation();
-		FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(Direction, Value);
+		if ((Controller) && (Value != 0.0f))
+		{
+			FRotator Rotation = Controller->GetControlRotation();
+			FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+			FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			AddMovementInput(Direction, Value);
+		}
 	}
 }
 
@@ -126,9 +132,12 @@ void APlayerCharacter::Attack()
 	if(AttackStarted)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attacked"));
-		UMyAnimInstance* AnimInstanceRef = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
-		if (AnimInstanceRef) AnimInstanceRef->Attack();
-		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttackAnimation, 0.1f, false);
+		AnimInstanceRef = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+		if (AnimInstanceRef)
+		{
+			AnimInstanceRef->Attack();
+			GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttackAnimation, 0.1f, false);
+		}
 	}
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "MyAnimInstance.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -26,6 +27,13 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = AnimationState)
 	bool BlockStarted;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Fight")
+	bool Blocking;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool CanMove;
+
 
 	
 protected:
@@ -58,6 +66,8 @@ protected:
 
 	FTimerHandle AttackTimerHandle;
 
+	UMyAnimInstance* AnimInstanceRef;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -72,5 +82,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
 
 };
