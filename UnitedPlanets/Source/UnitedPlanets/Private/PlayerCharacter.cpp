@@ -100,6 +100,7 @@ void APlayerCharacter::StopJumping()
 
 void APlayerCharacter::MoveForward(float Value)
 {
+	CanMove = true;
 	if (CanMove)
 	{
 		if ((Controller) && (Value != 0.0f))
@@ -114,6 +115,7 @@ void APlayerCharacter::MoveForward(float Value)
 
 void APlayerCharacter::MoveRight(float Value)
 {
+	CanMove = true;
 	if (CanMove)
 	{
 		if ((Controller) && (Value != 0.0f))
@@ -128,16 +130,11 @@ void APlayerCharacter::MoveRight(float Value)
 
 void APlayerCharacter::Attack()
 {
-	AttackStarted = true;
-	if(AttackStarted)
+	UE_LOG(LogTemp, Warning, TEXT("Attacked"));
+	// If mesh are valid and have Animation Blueprint
+	if (GetMesh() && GetMesh()->GetAnimInstance() && WeaponProperties.GetMesh()EquipMontage;
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attacked"));
-		AnimInstanceRef = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
-		if (AnimInstanceRef)
-		{
-			AnimInstanceRef->Attack();
-			GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &APlayerCharacter::StopAttackAnimation, 0.1f, false);
-		}
+		// Play mesh Equip Animation Blueprint
 	}
 }
 
